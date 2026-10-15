@@ -27,15 +27,6 @@ if not st.session_state["admin_logged_in"]:
 
 from knowledge_base import KnowledgeBaseService
 
-# 下面继续保留原来的知识库上传代码
-
-
-import streamlit as st
-import hashlib
-import time
-from knowledge_base import KnowledgeBaseService
-
-
 st.title('知识库更新')
 
 
@@ -69,7 +60,5 @@ if uploader_file is not None:
 
 
     with st.spinner('载入知识库中...'):
-        time.sleep(1)
         result=st.session_state['service'].upload_by_str(text,file_name)
         st.write(result)
-print(f'上传了{st.session_state["counter"]}个文件')

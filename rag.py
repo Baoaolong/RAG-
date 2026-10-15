@@ -8,7 +8,13 @@ from langchain_core.output_parsers import StrOutputParser
 from file_history_store import get_history
 
 
+DEBUG_PROMPT = os.getenv('RAG_DEBUG_PROMPT') == '1'
+
+
 def print_prompt(prompt):
+    if not DEBUG_PROMPT:
+        return prompt
+
     print('=='*20)
     print(prompt.to_string())
     print('=='*20)
