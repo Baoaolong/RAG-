@@ -6,6 +6,7 @@ from langchain_community.chat_models.tongyi import ChatTongyi
 from langchain_core.runnables import RunnablePassthrough,RunnableWithMessageHistory,RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from file_history_store import get_history
+import os
 
 
 DEBUG_PROMPT = os.getenv('RAG_DEBUG_PROMPT') == '1'

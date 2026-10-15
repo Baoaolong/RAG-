@@ -1,0 +1,12 @@
+# 不要把本地的密钥、虚拟环境和运行期文件带进镜像
+.env
+.streamlit/secrets.toml
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.git/
+.gitignore
+chat_history/
+logs/
+*.log

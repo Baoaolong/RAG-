@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 # 1. 本地开发时读取 .env
 load_dotenv()
 
-# 2. 云端没有环境变量时，再从 Streamlit Secrets 读取
+# 2. 云端（Hugging Face / 服务器）没有 .env，密钥来自环境变量或 Streamlit Secrets
 if not os.getenv("DASHSCOPE_API_KEY"):
     try:
         os.environ["DASHSCOPE_API_KEY"] = (

@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 
 if "admin_logged_in" not in st.session_state:
@@ -13,8 +14,10 @@ if not st.session_state["admin_logged_in"]:
 
     if st.button("登录"):
         try:
-            correct_password = st.secrets["ADMIN_PASSWORD"]
+            # 云端走环境变量，本地走 .streamlit/secrets.toml
+            correct_password = os.getenv("ADMIN_PASSWORD") or st.secrets["ADMIN_PASSWORD"]
         except Exception:
+            correct_password = os.getenv("ADMIN_PASSWORD")
             st.error("请先配置 ADMIN_PASSWORD")
         else:
             if password == correct_password:
