@@ -12,6 +12,8 @@
 1. 打开 https://modelscope.cn/studios/create
 2. 名称填 `rag-customer-service`（可自定义）
 3. **SDK 类型选 Streamlit**（用 `app.py` 直接跑，最省事；选 Docker 也行，端口已配好 7860，但要求阿里云实名认证）
+   - ⚠️ 创建时的默认值是 **Gradio**，不手动改的话页面跑不起来（Gradio 会去找 `app.py` 里的 Gradio 接口，找不到就报错）。
+   - 建完发现选错了也能救：用 OpenAPI 打一个 `PATCH /openapi/v1/studios/<用户名>/<空间名>/settings`，body 传 `{"sdk_type":"streamlit"}`，然后 `POST .../deploy` 重新部署。
 4. 硬件选免费的 CPU 规格
 5. 可见性建议先选**私有**，调通了再改公开
 
@@ -33,6 +35,26 @@ git push modelscope main:master
 ```
 
 如果提示需要登录，用户名填魔搭用户名，密码去这里生成访问令牌：https://modelscope.cn/my/myaccesstoken
+（令牌要选**「写权限令牌」**，仅读的推不上去。）
+
+### 首次推送会被拒绝，属正常
+
+创空间创建时会自动生成一个初始化提交（只有 `README.md` 和 `.gitattributes`），所以第一次 `push` 会报：
+
+```
+! [rejected]  main -> master (fetch first)
+error: failed to push some refs
+```
+
+而且 `master` 是受保护分支，`push --force` 也会被服务端拒绝（`You are not allowed to force push code to a protected branch`）。正确做法是先把它的初始化提交拉下来合并，再推：
+
+```bash
+git fetch modelscope master
+git merge modelscope/master --allow-unrelated-histories -X ours -m "合并创空间初始化提交"
+git push modelscope main:master
+```
+
+`-X ours` 的意思是：两边都有的文件（README、.gitattributes）保留**我们仓库的版本**。
 
 > 也可以不碰 git：直接在创空间页面的「文件」里上传。但 `chroma_db/` 和 `data/` 必须一起上传，否则向量库为空，提问会答不出东西。
 
