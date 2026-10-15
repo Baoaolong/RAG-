@@ -60,7 +60,7 @@ git push modelscope main:master
 
 ## 第 3 步：配置密钥
 
-在创空间页面找到 **设置 → 环境变量 / 密钥（Secrets）**，添加两个：
+在创空间页面找到 **设置 → 环境变量（有的界面叫 Secrets / 密钥）**，添加两个：
 
 | 键名 | 值 | 类型 |
 | --- | --- | --- |
@@ -70,6 +70,25 @@ git push modelscope main:master
 保存后平台会自动重新部署，等日志出现 `Running` 就成功了。
 
 访问地址：`https://modelscope.cn/studios/你的用户名/rag-customer-service`
+
+### 怎么判断「跑起来了但还不能用」
+
+代码里在没有密钥时的表现是：页面直接 `st.error` 提示缺少 `DASHSCOPE_API_KEY` 然后停下。
+所以**看到这个报错 = 镜像没问题、只是密钥还没配**，不是构建失败。
+
+也可以用 OpenAPI 远程确认（把 `<令牌>` 换成写权限令牌）：
+
+```powershell
+# 状态：status 走到 Running 才算好
+curl.exe -H "Authorization: Bearer <令牌>" `
+  https://modelscope.cn/openapi/v1/studios/你的用户名/rag-customer-service
+
+# 健康检查：返回 ok 说明 Streamlit 真的在服务
+curl.exe -H "Authorization: Bearer <令牌>" `
+  https://你的用户名-rag-customer-service.ms.show/_stcore/health
+```
+
+> 私有创空间的这些地址都要带 `Authorization` 头，浏览器里直接打开会返回 403，这是正常的。
 
 ## 排错
 
