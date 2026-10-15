@@ -69,26 +69,57 @@ git push modelscope main:master
 
 保存后平台会自动重新部署，等日志出现 `Running` 就成功了。
 
-访问地址：`https://modelscope.cn/studios/你的用户名/rag-customer-service`
+### 也可以完全不点网页，用 OpenAPI 写密钥
+
+改密钥、查密钥、删密钥都有接口，用写权限令牌调即可（把 `<令牌>` 换成你自己的）：
+
+```powershell
+$T = "<令牌>"
+$S = "https://modelscope.cn/openapi/v1/studios/你的用户名/rag-customer-service"
+
+# 写入/更新一个密钥（改 value 再调一次就是覆盖）
+Invoke-RestMethod -Method Post -Uri "$S/secrets" `
+  -Headers @{ Authorization = "Bearer $T" } -ContentType "application/json" `
+  -Body '{"key":"DASHSCOPE_API_KEY","value":"sk-你的密钥"}'
+
+# 查看当前有哪些密钥（只返回 key，不回显 value，是安全的）
+Invoke-RestMethod -Uri "$S/secrets" -Headers @{ Authorization = "Bearer $T" }
+
+# 删除某个密钥
+Invoke-RestMethod -Method Delete -Uri "$S/secrets" `
+  -Headers @{ Authorization = "Bearer $T" } -ContentType "application/json" `
+  -Body '{"key":"不要的键名"}'
+
+# 触发重新部署；注意这个接口只接受 POST，用 GET 会 404（很容易误判成没有该接口）
+Invoke-RestMethod -Method Post -Uri "$S/deploy" `
+  -Headers @{ Authorization = "Bearer $T" } -ContentType "application/json" -Body '{}'
+
+# 明文变量（非密钥）走 /variables，用法与 /secrets 完全一样
+```
+
+> 如果 `Invoke-RestMethod` / `curl.exe` 在本机报 TLS 错误（Windows 上常见
+> `基础连接已经关闭` 或 `schannel: SEC_E_NO_CREDENTIALS`），换 Python 的
+> `urllib.request` + `ssl.create_default_context()` 就能通，不必折腾证书。
 
 ### 怎么判断「跑起来了但还不能用」
 
 代码里在没有密钥时的表现是：页面直接 `st.error` 提示缺少 `DASHSCOPE_API_KEY` 然后停下。
 所以**看到这个报错 = 镜像没问题、只是密钥还没配**，不是构建失败。
 
-也可以用 OpenAPI 远程确认（把 `<令牌>` 换成写权限令牌）：
+也可以用 OpenAPI 远程确认：
 
 ```powershell
 # 状态：status 走到 Running 才算好
-curl.exe -H "Authorization: Bearer <令牌>" `
-  https://modelscope.cn/openapi/v1/studios/你的用户名/rag-customer-service
+Invoke-RestMethod -Uri "https://modelscope.cn/openapi/v1/studios/你的用户名/rag-customer-service" `
+  -Headers @{ Authorization = "Bearer <令牌>" }
 
 # 健康检查：返回 ok 说明 Streamlit 真的在服务
-curl.exe -H "Authorization: Bearer <令牌>" `
-  https://你的用户名-rag-customer-service.ms.show/_stcore/health
+Invoke-RestMethod -Uri "https://你的用户名-rag-customer-service.ms.show/_stcore/health" `
+  -Headers @{ Authorization = "Bearer <令牌>" }
 ```
 
 > 私有创空间的这些地址都要带 `Authorization` 头，浏览器里直接打开会返回 403，这是正常的。
+> **密钥变更不会自动重启容器**：写完密钥必须再调一次 `POST .../deploy`，否则运行中的进程读的还是旧环境变量。
 
 ## 排错
 
