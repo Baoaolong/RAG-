@@ -32,7 +32,15 @@ pinned: false
 | `chroma_db/` | 已建好的向量库（随仓库提供，无需重新embedding） |
 | `data/` | 原始知识文档 |
 
-## 部署到 Hugging Face Spaces（本仓库已配好）
+## 部署方式
+
+| 方式 | 成本 | 说明 |
+| --- | --- | --- |
+| **魔搭创空间**（推荐） | 免费 | 国内直连，SDK 可传 `Streamlit`（入口 `app.py`）或 `Docker`。步骤见 [`docs/deploy-modelscope.md`](docs/deploy-modelscope.md) |
+| **云服务器** | 约 60~100 元/月 | 最稳，支持域名 + 自动 HTTPS。执行 `sudo bash setup.sh <域名> <管理密码>` |
+| Hugging Face Spaces | 现在需付费 | 官方已把 Docker / Gradio Space 划入 PRO 付费档，免费账号只能建 Static（跑不了 Python） |
+
+## 部署到 Hugging Face Spaces（Docker 配置已就绪，但需 PRO）
 
 1. 打开 https://huggingface.co/new-space ，填名字，**SDK 选 Docker**，硬件选免费的 CPU basic，创建。
 2. 把本仓库代码推到这个 Space（或直接在 Space 的 Files 页面上传）。
@@ -42,6 +50,8 @@ pinned: false
 4. 等构建完成（首次约 3~6 分钟），页面出现即部署成功。
 
 > ⚠️ 免费版 Space 在无访问时会休眠，下一次访问需要几十秒唤醒，属正常现象。
+>
+> ⚠️ **2025 年底起，Hugging Face 把 Docker / Gradio Space 收进了 PRO 付费档**，免费账号创建时只能选 Static（纯静态网页，跑不了 Python 后端）。没有订阅 PRO 的话请走上面的魔搭或云服务器方案。
 
 ## 本地运行
 

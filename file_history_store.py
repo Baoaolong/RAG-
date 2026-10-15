@@ -7,7 +7,9 @@ from langchain_core.chat_history import BaseChatMessageHistory
 
 
 def get_history(session_id):
-    return FileChatMessageHistory(session_id, './chat_history')
+    # 基于本文件位置，容器/服务器上工作目录变化也能写对地方
+    history_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chat_history')
+    return FileChatMessageHistory(session_id, history_root)
 
 
 class FileChatMessageHistory(BaseChatMessageHistory):

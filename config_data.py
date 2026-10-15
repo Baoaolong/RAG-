@@ -1,9 +1,13 @@
-md5_path='./md5.txt'
+from pathlib import Path
+
+# 以本文件所在目录为基准，避免工作目录变化（本地 / 容器 / 服务器）时找不到向量库
+APP_DIR = Path(__file__).resolve().parent
+
+md5_path = str(APP_DIR / 'md5.txt')
 
 
-
-collection_name='rag'
-persist_directory='./chroma_db'
+collection_name = 'rag'
+persist_directory = str(APP_DIR / 'chroma_db')
 
 
 

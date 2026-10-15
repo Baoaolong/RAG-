@@ -1,0 +1,6 @@
+# 服务器脚本必须是 LF 换行，否则在 Linux 上会报 "\r: command not found"
+setup.sh text eol=lf
+
+# 容器与配置同理，保持 LF
+Dockerfile text eol=lf
+.dockerignore text eol=lf
