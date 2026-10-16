@@ -155,6 +155,7 @@ if __name__ == '__main__':
         '洗涤养护.txt',
         '颜色选择.txt',
         '尺码推荐.txt',
+        '客服闲聊话术.txt',
     ]
     for file_name in file_names:
         file_path=data_dir/file_name
