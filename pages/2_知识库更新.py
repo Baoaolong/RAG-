@@ -13,34 +13,12 @@ if not st.session_state["admin_logged_in"]:
     )
 
     if st.button("登录"):
-        import hashlib
-
-        env_pw = os.getenv("ADMIN_PASSWORD")
-        try:
-            sec_pw = st.secrets["ADMIN_PASSWORD"]
-        except Exception as exc:
-            sec_pw = f"<不可用: {type(exc).__name__}>"
-        try:
-            sec_any = sorted(list(st.secrets.keys()))
-        except Exception:
-            sec_any = []
-
-        # 临时诊断：只显示长度与哈希，不显示明文。排查完删掉这一段。
-        lines = []
-        for label, val in (("环境变量", env_pw), ("st.secrets", sec_pw)):
-            if isinstance(val, str) and not val.startswith("<"):
-                lines.append(
-                    f"{label}: 长度 {len(val)} sha256_12 "
-                    f"{hashlib.sha256(val.encode('utf-8')).hexdigest()[:12]}"
-                )
-            else:
-                lines.append(f"{label}: {val}")
-        lines.append(f"st.secrets 里的键: {sec_any}")
-        lines.append(f"输入值: 长度 {len(password)} sha256_12 "
-                     f"{hashlib.sha256(password.encode('utf-8')).hexdigest()[:12]}")
-        st.code("\n".join(lines), language="text")
-
-        correct_password = env_pw or (sec_pw if isinstance(sec_pw, str) else None)
+        correct_password = os.getenv("ADMIN_PASSWORD")
+        if not correct_password:
+            try:
+                correct_password = st.secrets["ADMIN_PASSWORD"]
+            except Exception:
+                correct_password = None
 
         if correct_password and password == correct_password:
             st.session_state["admin_logged_in"] = True
